@@ -2,14 +2,23 @@ package com.social.gamification.service;
 
 import java.util.List;
 
-import com.social.gamification.domain.LeaderBoardRow;
+import org.springframework.stereotype.Service;
 
+import com.social.gamification.domain.LeaderBoardRow;
+import com.social.gamification.repository.ScoreCardRepository;
+
+@Service
 public class LeaderBoardServiceImpl implements LeaderBoardService {
+	
+	private ScoreCardRepository scoreCardRepository;
+	
+	public LeaderBoardServiceImpl(ScoreCardRepository scoreCardRepository) {
+		this.scoreCardRepository = scoreCardRepository;
+	}
 
 	@Override
 	public List<LeaderBoardRow> getCurrentLeaderBoard() {
-		// TODO Auto-generated method stub
-		return null;
+		return scoreCardRepository.findFirst10();
 	}
 
 }

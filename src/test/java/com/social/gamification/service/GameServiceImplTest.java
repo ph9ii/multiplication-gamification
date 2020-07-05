@@ -41,6 +41,7 @@ public class GameServiceImplTest {
 	public void setUp() {
 		// With this call, we tell Mockito to process the annotaions
 		MockitoAnnotations.initMocks(this);
+		gameService = new GameServiceImpl(scoreCardRepository, badgeCardRepository);
 	}
 
 	@Test
@@ -104,7 +105,30 @@ public class GameServiceImplTest {
 		// then (assert) - shouldn't score anything
 		assertThat(iteration.getScore()).isEqualTo(0);
 		assertThat(iteration.getBadges()).isEmpty();
-		;
+	}
+
+	@Test
+	public void retrieveStatsForUserTest() {
+		// given
+		Long userId = 1L;
+		int totalScore = 1000;
+		BadgeCard badgeCard = new BadgeCard(userId, Badge.SILVER_MULTIPLICATOR);
+		given(scoreCardRepository.getTotalScoreForUser(userId)).willReturn(totalScore);
+		given(badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(userId))
+				.willReturn(Collections.singletonList(badgeCard));
+
+		// when
+		GameStats stats = gameService.retrieveStatsForUser(userId);
+
+		// assert - should score and win the badge SILVER_MULTIPLICATOR
+		assertThat(stats.getScore()).isEqualTo(totalScore);
+		assertThat(stats.getBadges()).containsOnly(Badge.SILVER_MULTIPLICATOR);
+
+	}
+
+	@Test
+	public void processCorrectAttemptForLuckyNumberBadgeTest() {
+		// TODO: write test logic
 	}
 
 	private List<ScoreCard> createNScoreCards(int n, Long userId) {
